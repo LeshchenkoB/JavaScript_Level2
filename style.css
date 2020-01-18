@@ -3,26 +3,24 @@ html{
     margin: 0;
     font-family: Arial, sans-serif;
 }
-
 header,
 main{
     width: 100%;
 }
-
 header{
     background-color: cornsilk;
     position: fixed;
 }
-
 .container{
     width: 1600px;
     margin: 0 auto;
+}
+.header-wrap{
     min-height: 100px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
 }
-
 .cart-button{
     width: 170px;
     height: 50px;
