@@ -10,13 +10,13 @@ const renderGoodsItem = (title, price, img = '') => {
         <img src="${img}" alt="alt">
         <h3>${title}</h3>
         <p>${price}</p>
-        <button class="cart-button add-button">Добавить</button>
+        <button class="cart-button add-button" type="button">Добавить</button>
     </div>`
 };
 
 const renderGoodsList = (list, container) => {
     const goodsList = list.map(good => renderGoodsItem(good.title, good.price, good.img));
-    document.querySelector(container).innerHTML = goodsList;
+    document.querySelector(container).innerHTML = goodsList.join("");
 };
 
 renderGoodsList(goods, '.goods-list');
