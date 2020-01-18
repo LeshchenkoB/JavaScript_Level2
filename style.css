@@ -12,16 +12,17 @@ header{
     position: fixed;
 }
 .container{
-    width: 1600px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 .header-wrap{
-    min-height: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
 }
 .cart-button{
+    margin-right: 25px;
     width: 170px;
     height: 50px;
     padding: 10px;
@@ -39,4 +40,23 @@ header{
 }
 .cart-button:active{
     background-color: lightgreen;
+}
+main{
+    padding-top: 100px;
+}
+.goods-list{
+    width: 100%;
+    padding-top: 35px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+}
+.goods-item{
+    width: 265px;
+    height: 300px;
+    padding-top: 15px;
+    border: 1px solid black;
+    box-sizing: border-box;
+    text-align: center;
+    color: #555555;
 }
