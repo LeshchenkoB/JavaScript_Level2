@@ -10,6 +10,7 @@ const renderGoodsItem = (title, price, img = '') => {
         <img src="${img}" alt="alt">
         <h3>${title}</h3>
         <p>${price}</p>
+        <button class="cart-button add-button">Добавить</button>
     </div>`
 };
 
