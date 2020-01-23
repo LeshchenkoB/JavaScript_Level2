@@ -69,9 +69,22 @@ class GoodsList {
         this.container.innerHTML = listHtml;
         this.initListeners();
     }
+
+    /**
+     * Метод определяет суммарную стоимость всех товаров
+     */
+    totalCost(){
+        let totalCostVal = 0;
+        this.goods.forEach(good => {
+            totalCostVal += Number(good.price);
+        });
+        console.log (`Общая стоимость всех товаров: ${totalCostVal}`);
+    }
 }
 
 const list = new GoodsList('.goods-list');
 list.fetchGoods();
 list.render();
+list.totalCost();
+
 
