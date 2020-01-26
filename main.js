@@ -123,5 +123,3 @@ list.fetchGoods(() => {
     console.log(list.totalSum());
 });
 
-const cart = new Cart;
-cart.updateCartItem();
