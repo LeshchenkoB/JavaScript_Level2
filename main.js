@@ -1,50 +1,75 @@
-/*
-* Класс для корзины товаров
-* понадобятся методы :
-* 1. подсчета количества и суммы товаров в корзине
-* 2. удаления товара из корзины
-* 3. метод отрисовки разметки с добавленными товарами (добавление нового товара)
-* 4. метод оплаты или что-то в этом роде
-* ....
-* */
-class GoodsBasket {
+const API_URL = "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
+function makeGetRequest(url) {
+    return new Promise((resolve, reject) => {
+        let xhr;
+        if (window.XMLHttpRequest) {
+            xhr = new window.XMLHttpRequest();
+        } else  {
+            xhr = new window.ActiveXObject("Microsoft.XMLHTTP")
+        }
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                resolve(xhr.responseText)
+            }
+        };
+
+        xhr.open('GET', url);
+        xhr.send();
+    });
 }
-/*
-* Класс для товара корзины
-* понадобятся методы :
-* 1. увеличивать или уменьшать количество товара
-* 2. выделять строку цветом, которую выбрал пользователь
-* ...
-* */
-class GoodsBasketItem {
-
-}
-
 
 class GoodsItem {
-    constructor(id, title = 'Без названия', price = 0, img = '') {
-        this.id = id;
-        this.title = title;
+    constructor(id_product, product_name = 'Без названия', price = 0, img = 'https://via.placeholder.com/200') {
+        this.id_product = id_product;
+        this.product_name = product_name;
         this.price = price;
         this.img = img;
     }
     render() {
         return `
-            <div class="goods-item" data-id="${this.id}">
+            <div class="goods-item" data-id="${this.id_product}">
                 <img src="${this.img}" alt="alt">
-                <h3>${this.title}</h3>
+                <h3>${this.product_name}</h3>
                 <p>${this.price}</p>
                 <button class="cart-button add-button" type="button">Добавить</button>
             </div>
         `;
     }
 }
+
 class GoodsList {
     constructor(container) {
         this.container = document.querySelector(container);
         this.goods = [];
     }
+    initListeners() {}
+    findGood(id) {
+        return this.goods.find(good => good.id === id);
+    }
+    fetchGoods() {}
+    totalSum() {
+        let sum = 0;
+        for (const good of this.goods) {
+            if (good.price) {
+                sum += good.price;
+            }
+        }
+        return sum;
+    }
+    render() {
+        let listHtml = '';
+        this.goods.forEach(good => {
+            const goodItem = new GoodsItem(good.id_product, good.product_name, good.price, good.img);
+            listHtml += goodItem.render();
+        });
+        this.container.innerHTML = listHtml;
+        this.initListeners();
+    }
+}
+
+class GoodsPage extends GoodsList {
     initListeners() {
         const buttons = [...this.container.querySelectorAll('.add-button')];
         buttons.forEach(button => {
@@ -54,47 +79,47 @@ class GoodsList {
             })
         })
     }
-    findGood(id) {
-        return this.goods.find(good => good.id === id);
+    fetchGoods(callback) {
+        makeGetRequest(`${API_URL}/catalogData.json`).then((goods) => {
+            this.goods = JSON.parse(goods);
+        }).then(()=>{
+            callback();
+        });
     }
     addToCart(goodId) {
         const good = this.findGood(goodId);
         console.log(good);
     }
-    fetchGoods() {
-        this.goods = [
-            {id: 1, title: "Робот-пылесос xiaomi", price: 20000, img: 'https://via.placeholder.com/150'},
-            {id: 2, title: "Samsung Galaxy", price: 21500, img: 'https://via.placeholder.com/150'},
-            {id: 3, title: "Стиральная машина hotpoint", price: 32000, img: 'https://via.placeholder.com/150'},
-            {id: 4, title: "Умные часы apple watch", price: 26000, img: 'https://via.placeholder.com/150'},
-            {id: 5, title: "Посудомоечная машина bosh", price: 26000, img: 'https://via.placeholder.com/150'},
-        ]
-    }
-    render() {
-        let listHtml = '';
-        this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.id, good.title, good.price, good.img);
-            listHtml += goodItem.render();
-        });
-        this.container.innerHTML = listHtml;
-        this.initListeners();
-    }
+}
 
-    /**
-     * Метод определяет суммарную стоимость всех товаров
-     */
-    totalCost(){
-        let totalCostVal = 0;
-        this.goods.forEach(good => {
-            totalCostVal += Number(good.price);
-        });
-        console.log (`Общая стоимость всех товаров: ${totalCostVal}`);
+class Cart extends GoodsList {
+    removeFromCart(goodId) {
+
+    }
+    cleanCart() {
+
+    }
+    updateCartItem() {
+
     }
 }
 
-const list = new GoodsList('.goods-list');
-list.fetchGoods();
-list.render();
-list.totalCost();
+class CartItem extends GoodsItem {
+    constructor(...attrs) {
+        super(attrs);
+        this.count = 0;
+    }
+    incCount() {
 
+    }
+    decCount() {
+
+    }
+}
+
+const list = new GoodsPage('.goods-list');
+list.fetchGoods(() => {
+    list.render();
+    console.log(list.totalSum());
+});
 
