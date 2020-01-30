@@ -1,7 +1,7 @@
 const btn = document.getElementById("send");
-const regexpUserName = /\'/g;
-const regexpPhone = /\'/g;
-const regexpEmail = /\'/g;
+const regexpUserName = /[А-ЯА-я]\s[А-ЯА-я]/g;
+const regexpPhone = /\+7\(\d{3}\)\d{3}-\d{4}/g;
+const regexpEmail = /my(|\.|-)mail@mail\.ru/;
 
 btn.addEventListener('click', (event)=>{
     const userName = document.getElementById('userName');
