@@ -14,7 +14,9 @@ header {
     margin-left: auto;
     position: relative;
 }
-
+.visibleCart{
+    display: none;
+}
 .cart-container {
     position: absolute;
     right: 0;

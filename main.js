@@ -6,7 +6,8 @@ const app = new Vue({
         goods: [],
         filteredGoods: [],
         searchLine: '',
-        content: '<br>123</br>'
+        content: '<br>123</br>',
+        isVisibleCart: false
     },
     methods: {
         makeGetRequest(url) {
@@ -44,9 +45,17 @@ const app = new Vue({
             } catch (e) {
                 console.error(e);
             }
+        },
+        visibleCart(){
+            if(this.isVisibleCart){
+                this.isVisibleCart = false
+            } else{
+                this.isVisibleCart = true
+            }
         }
     },
     mounted() {
         this.fetchGoods();
     }
+
 });
