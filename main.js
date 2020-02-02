@@ -4,6 +4,7 @@ const app = new Vue({
     el: '#app',
     data: {
         goods: [],
+        goodsCart: [],
         filteredGoods: [],
         searchLine: '',
         isVisibleCart: false
@@ -50,6 +51,9 @@ const app = new Vue({
                 console.error(e);
             }
         },
+        /*
+        * метод отображает/скрывает содержимое корзины при нажатии на кнопку "корзина"
+        * */
         visibleCart(){
             if(this.isVisibleCart){
                 this.isVisibleCart = false
@@ -57,11 +61,26 @@ const app = new Vue({
                 this.isVisibleCart = true
             }
         },
+        /*
+        * метод фильтрует товары по значению из поиска
+        * */
         filterGoods(value) {
             const regexp = new RegExp(value, 'i');
             this.filteredGoods = this.goods.filter((good) => {
                 return regexp.test(good.product_name);
             });
+        },
+        /*
+        * метод добавляет в корзину выбранные товары и считает их там
+        * */
+        addToCart(good){
+            if (this.goodsCart.indexOf(good) == -1) {
+                this.goodsCart.push(good);
+                good.counts = 1
+            }
+            else{
+                good.counts += 1
+            }
         }
     },
     mounted() {
