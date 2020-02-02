@@ -6,8 +6,12 @@ const app = new Vue({
         goods: [],
         filteredGoods: [],
         searchLine: '',
-        content: '<br>123</br>',
         isVisibleCart: false
+    },
+    watch:{
+        searchLine: function(){
+            //this.filterGoods(this.searchLine) // если сделать так, то при вводе символов в поиск, страница будет сразу же перерисовываться исходя их значений в input
+        }
     },
     methods: {
         makeGetRequest(url) {
@@ -40,7 +44,7 @@ const app = new Vue({
         },
         async fetchGoods() {
             try {
-                this.goods = await this.makeGetRequest(`${API_URL}/catalogData.json`)
+                this.goods = await this.makeGetRequest(`${API_URL}/catalogData.json`);
                 this.filteredGoods = [...this.goods];
             } catch (e) {
                 console.error(e);
@@ -52,10 +56,15 @@ const app = new Vue({
             } else{
                 this.isVisibleCart = true
             }
+        },
+        filterGoods(value) {
+            const regexp = new RegExp(value, 'i');
+            this.filteredGoods = this.goods.filter((good) => {
+                return regexp.test(good.product_name);
+            });
         }
     },
     mounted() {
         this.fetchGoods();
     }
-
 });
