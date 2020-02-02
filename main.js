@@ -1,100 +1,52 @@
-/*
-* Класс для корзины товаров
-* понадобятся методы :
-* 1. подсчета количества и суммы товаров в корзине
-* 2. удаления товара из корзины
-* 3. метод отрисовки разметки с добавленными товарами (добавление нового товара)
-* 4. метод оплаты или что-то в этом роде
-* ....
-* */
-class GoodsBasket {
+const API_URL = "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
-}
-/*
-* Класс для товара корзины
-* понадобятся методы :
-* 1. увеличивать или уменьшать количество товара
-* 2. выделять строку цветом, которую выбрал пользователь
-* ...
-* */
-class GoodsBasketItem {
+const app = new Vue({
+    el: '#app',
+    data: {
+        goods: [],
+        filteredGoods: [],
+        searchLine: '',
+        content: '<br>123</br>'
+    },
+    methods: {
+        makeGetRequest(url) {
+            return new Promise((resolve, reject) => {
+                let xhr;
+                if (window.XMLHttpRequest) {
+                    xhr = new window.XMLHttpRequest(); // readyState = 1
+                } else  {
+                    xhr = new window.ActiveXObject("Microsoft.XMLHTTP")
+                }
 
-}
+                xhr.onreadystatechange = function () { // xhr changed
+                    if (xhr.readyState === 4) {
+                        if (xhr.status !== 200) {
+                            reject(xhr.responseText);
+                            return
+                        }
+                        const body = JSON.parse(xhr.responseText);
+                        resolve(body)
+                    }
+                };
 
+                xhr.onerror = function (err) {
+                    reject(err)
+                };
 
-class GoodsItem {
-    constructor(id, title = 'Без названия', price = 0, img = '') {
-        this.id = id;
-        this.title = title;
-        this.price = price;
-        this.img = img;
+                xhr.open('GET', url);
+                xhr.send(); // readyState 2
+            });
+        },
+        async fetchGoods() {
+            try {
+                this.goods = await this.makeGetRequest(`${API_URL}/catalogData.json`)
+                this.filteredGoods = [...this.goods];
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    mounted() {
+        this.fetchGoods();
     }
-    render() {
-        return `
-            <div class="goods-item" data-id="${this.id}">
-                <img src="${this.img}" alt="alt">
-                <h3>${this.title}</h3>
-                <p>${this.price}</p>
-                <button class="cart-button add-button" type="button">Добавить</button>
-            </div>
-        `;
-    }
-}
-class GoodsList {
-    constructor(container) {
-        this.container = document.querySelector(container);
-        this.goods = [];
-    }
-    initListeners() {
-        const buttons = [...this.container.querySelectorAll('.add-button')];
-        buttons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const goodId = event.target.parentElement.getAttribute('data-id');
-                this.addToCart(parseInt(goodId, 10));
-            })
-        })
-    }
-    findGood(id) {
-        return this.goods.find(good => good.id === id);
-    }
-    addToCart(goodId) {
-        const good = this.findGood(goodId);
-        console.log(good);
-    }
-    fetchGoods() {
-        this.goods = [
-            {id: 1, title: "Робот-пылесос xiaomi", price: 20000, img: 'https://via.placeholder.com/150'},
-            {id: 2, title: "Samsung Galaxy", price: 21500, img: 'https://via.placeholder.com/150'},
-            {id: 3, title: "Стиральная машина hotpoint", price: 32000, img: 'https://via.placeholder.com/150'},
-            {id: 4, title: "Умные часы apple watch", price: 26000, img: 'https://via.placeholder.com/150'},
-            {id: 5, title: "Посудомоечная машина bosh", price: 26000, img: 'https://via.placeholder.com/150'},
-        ]
-    }
-    render() {
-        let listHtml = '';
-        this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.id, good.title, good.price, good.img);
-            listHtml += goodItem.render();
-        });
-        this.container.innerHTML = listHtml;
-        this.initListeners();
-    }
-
-    /**
-     * Метод определяет суммарную стоимость всех товаров
-     */
-    totalCost(){
-        let totalCostVal = 0;
-        this.goods.forEach(good => {
-            totalCostVal += Number(good.price);
-        });
-        console.log (`Общая стоимость всех товаров: ${totalCostVal}`);
-    }
-}
-
-const list = new GoodsList('.goods-list');
-list.fetchGoods();
-list.render();
-list.totalCost();
-
-
+});
