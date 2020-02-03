@@ -1,125 +1,89 @@
 const API_URL = "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
-function makeGetRequest(url) {
-    return new Promise((resolve, reject) => {
-        let xhr;
-        if (window.XMLHttpRequest) {
-            xhr = new window.XMLHttpRequest();
-        } else  {
-            xhr = new window.ActiveXObject("Microsoft.XMLHTTP")
+const app = new Vue({
+    el: '#app',
+    data: {
+        goods: [],
+        goodsCart: [],
+        filteredGoods: [],
+        searchLine: '',
+        isVisibleCart: false
+    },
+    watch:{
+        searchLine: function(){
+            //this.filterGoods(this.searchLine) // если сделать так, то при вводе символов в поиск, страница будет сразу же перерисовываться исходя их значений в input
         }
+    },
+    methods: {
+        makeGetRequest(url) {
+            return new Promise((resolve, reject) => {
+                let xhr;
+                if (window.XMLHttpRequest) {
+                    xhr = new window.XMLHttpRequest(); // readyState = 1
+                } else  {
+                    xhr = new window.ActiveXObject("Microsoft.XMLHTTP")
+                }
 
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                resolve(xhr.responseText)
+                xhr.onreadystatechange = function () { // xhr changed
+                    if (xhr.readyState === 4) {
+                        if (xhr.status !== 200) {
+                            reject(xhr.responseText);
+                            return
+                        }
+                        const body = JSON.parse(xhr.responseText);
+                        resolve(body)
+                    }
+                };
+
+                xhr.onerror = function (err) {
+                    reject(err)
+                };
+
+                xhr.open('GET', url);
+                xhr.send(); // readyState 2
+            });
+        },
+        async fetchGoods() {
+            try {
+                this.goods = await this.makeGetRequest(`${API_URL}/catalogData.json`);
+                this.filteredGoods = [...this.goods];
+            } catch (e) {
+                console.error(e);
             }
-        };
-
-        xhr.open('GET', url);
-        xhr.send();
-    });
-}
-
-class GoodsItem {
-    constructor(id_product, product_name = 'Без названия', price = 0, img = 'https://via.placeholder.com/200') {
-        this.id_product = id_product;
-        this.product_name = product_name;
-        this.price = price;
-        this.img = img;
-    }
-    render() {
-        return `
-            <div class="goods-item" data-id="${this.id_product}">
-                <img src="${this.img}" alt="alt">
-                <h3>${this.product_name}</h3>
-                <p>${this.price}</p>
-                <button class="cart-button add-button" type="button">Добавить</button>
-            </div>
-        `;
-    }
-}
-
-class GoodsList {
-    constructor(container) {
-        this.container = document.querySelector(container);
-        this.goods = [];
-    }
-    initListeners() {}
-    findGood(id) {
-        return this.goods.find(good => good.id === id);
-    }
-    fetchGoods() {}
-    totalSum() {
-        let sum = 0;
-        for (const good of this.goods) {
-            if (good.price) {
-                sum += good.price;
+        },
+        /*
+        * метод отображает/скрывает содержимое корзины при нажатии на кнопку "корзина"
+        * */
+        visibleCart(){
+            if(this.isVisibleCart){
+                this.isVisibleCart = false
+            } else{
+                this.isVisibleCart = true
+            }
+        },
+        /*
+        * метод фильтрует товары по значению из поиска
+        * */
+        filterGoods(value) {
+            const regexp = new RegExp(value, 'i');
+            this.filteredGoods = this.goods.filter((good) => {
+                return regexp.test(good.product_name);
+            });
+        },
+        /*
+        * метод добавляет в корзину выбранные товары и считает их там
+        * */
+        addToCart(good){
+            if (this.goodsCart.indexOf(good) == -1) {
+                this.goodsCart.push(good);
+                good.counts = 1
+            }
+            else{
+                good.counts += 1
             }
         }
-        return sum;
+    },
+    mounted() {
+        this.fetchGoods();
     }
-    render() {
-        let listHtml = '';
-        this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.id_product, good.product_name, good.price, good.img);
-            listHtml += goodItem.render();
-        });
-        this.container.innerHTML = listHtml;
-        this.initListeners();
-    }
-}
-
-class GoodsPage extends GoodsList {
-    initListeners() {
-        const buttons = [...this.container.querySelectorAll('.add-button')];
-        buttons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const goodId = event.target.parentElement.getAttribute('data-id');
-                this.addToCart(parseInt(goodId, 10));
-            })
-        })
-    }
-    fetchGoods(callback) {
-        makeGetRequest(`${API_URL}/catalogData.json`).then((goods) => {
-            this.goods = JSON.parse(goods);
-        }).then(()=>{
-            callback();
-        });
-    }
-    addToCart(goodId) {
-        const good = this.findGood(goodId);
-        console.log(good);
-    }
-}
-
-class Cart extends GoodsList {
-    removeFromCart(goodId) {
-
-    }
-    cleanCart() {
-
-    }
-    updateCartItem() {
-
-    }
-}
-
-class CartItem extends GoodsItem {
-    constructor(...attrs) {
-        super(attrs);
-        this.count = 0;
-    }
-    incCount() {
-
-    }
-    decCount() {
-
-    }
-}
-
-const list = new GoodsPage('.goods-list');
-list.fetchGoods(() => {
-    list.render();
-    console.log(list.totalSum());
 });
-
