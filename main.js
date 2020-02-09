@@ -1,5 +1,7 @@
 const API_URL = "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
+const cartGoods = [];
+
 function debounce(callback, wait, immediate) {
     let timeout;
     return function () {
@@ -17,10 +19,36 @@ function debounce(callback, wait, immediate) {
         }
     }
 }
+
+Vue.component('cart', {
+    data:()=>({
+        cartGoods: [],
+    }),
+    template:`
+        <ol class="cart-goods">
+            <li v-for="good in cartGoods">{{ good.product_name }} Цена:{{ good.price }}руб. Кол-во {{good.counts}}</li>
+        </ol>
+    `,
+    computed: {
+        /*
+        * метод добавляет в корзину выбранные товары и считает их там
+        * */
+        addToCart(good){
+            console.log(good);
+            if (this.cartGoods.indexOf(good) == -1) {
+                this.cartGoods.push(good);
+                good.counts = 1
+            }
+            else{
+                good.counts += 1
+            }
+        }
+    }
+});
+
 Vue.component('goods-search',{
     data:()=>({
         searchLine: '',
-
     }),
     template:`
         <form id="searchForm" action="">
@@ -36,7 +64,7 @@ Vue.component('goods-item', {
            <img src="https://via.placeholder.com/250" alt="alt">
            <h3>{{ good.product_name }}</h3>
            <p>{{ good.price }}</p>
-           <button>Добавить</button>
+           <button @click="$emit('addToCart(good)')">Добавить</button>
         </div>
     `
 });
@@ -134,18 +162,6 @@ const app = new Vue({
                 return regexp.test(good.product_name);
             });
         },
-        /*
-        * метод добавляет в корзину выбранные товары и считает их там
-        * */
-        addToCart(good){
-            if (this.goodsCart.indexOf(good) == -1) {
-                this.goodsCart.push(good);
-                good.counts = 1
-            }
-            else{
-                good.counts += 1
-            }
-        }
     },
     mounted() {
         this.fetchGoods();
