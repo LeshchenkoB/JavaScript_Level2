@@ -1,4 +1,3 @@
-const API_URL = "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
 const cartGoods = [];
 
@@ -26,7 +25,7 @@ Vue.component('cart', {
     }),
     template:`
         <ol class="cart-goods">
-            <li v-for="good in cartGoods">{{ good.product_name }} Цена:{{ good.price }}руб. Кол-во {{good.counts}}</li>
+            <li v-for="good in cartGoods">{{ good.name }} Цена:{{ good.price }}руб. Кол-во {{good.counts}}</li>
         </ol>
     `,
     computed: {
@@ -61,8 +60,8 @@ Vue.component('goods-item', {
     props: ['good'],
     template: `
         <div class="goods-item" >
-           <img src="https://via.placeholder.com/250" alt="alt">
-           <h3>{{ good.product_name }}</h3>
+           <img :src="good.img" alt="alt">
+           <h3>{{ good.name }}</h3>
            <p>{{ good.price }}</p>
            <button @click="$emit('addToCart(good)')">Добавить</button>
         </div>
@@ -79,7 +78,7 @@ Vue.component('goods-list', {
     template: `
         <div class="goods-list" v-if="!isFilteredGoodsEmpty">
             <goods-item v-for="good in goods"
-                        :key="good.id_product" :good="good"></goods-item>
+                        :key="good.id" :good="good"></goods-item>
         </div>
         <div class="goods-not-found" v-else>
             <h3>Товаров для отображения нет!</h3>
@@ -137,7 +136,7 @@ const app = new Vue({
         },
         async fetchGoods() {
             try {
-                this.goods = await this.makeGetRequest(`${API_URL}/catalogData.json`);
+                this.goods = await this.makeGetRequest(`/api/goods`);
                 this.filteredGoods = [...this.goods];
             } catch (e) {
                 console.error(e);
@@ -159,7 +158,7 @@ const app = new Vue({
         filterGoods(value) {
             const regexp = new RegExp(value, 'i');
             this.filteredGoods = this.goods.filter((good) => {
-                return regexp.test(good.product_name);
+                return regexp.test(good.name);
             });
         },
     },
