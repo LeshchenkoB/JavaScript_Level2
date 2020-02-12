@@ -16,10 +16,7 @@
         <div class="cart">
             <button class="cart-button" @click="visibleCart">Корзина</button>
             <div class="cart-container" :class="{ visibleCart: !isVisibleCart }">
-<!--                <ol class="cart-goods">-->
                     <cart></cart>
-<!--                    <li v-for="good in goodsCart">{{ good.product_name }} Цена:{{ good.price }}руб. Кол-во {{good.counts}}</li>-->
-<!--                </ol>-->
             </div>
         </div>
     </header>
