@@ -12,29 +12,19 @@
 <body>
 <div id="app">
     <header>
-        <form class="goods-search" @submit.prevent="filterGoods(searchLine)">
-            <input type="text" class="goods-search-value" v-model="searchLine">
-            <button class="goods-search-button">Искать</button>
-        </form>
+        <goods-search @input="filteredGoodsHandler" v-model="searchLine"></goods-search>
         <div class="cart">
             <button class="cart-button" @click="visibleCart">Корзина</button>
             <div class="cart-container" :class="{ visibleCart: !isVisibleCart }">
-                <ol class="cart-goods">
-                    <li v-for="good in goodsCart">{{ good.product_name }} Цена:{{ good.price }}руб. Кол-во {{good.counts}}</li>
-                </ol>
+<!--                <ol class="cart-goods">-->
+                    <cart></cart>
+<!--                    <li v-for="good in goodsCart">{{ good.product_name }} Цена:{{ good.price }}руб. Кол-во {{good.counts}}</li>-->
+<!--                </ol>-->
             </div>
         </div>
     </header>
     <main>
-        <div class="goods-list" v-if="filteredGoods.length != 0">
-            <div class="goods-item" v-for="good in filteredGoods" :key="good.id_product">
-                <img src="https://via.placeholder.com/250" alt="alt">
-                <h3>{{ good.product_name }}</h3>
-                <p>{{ good.price }}</p>
-                <button @click="addToCart(good)">Добавить</button>
-            </div>
-        </div>
-        <h3 v-else>Товаров для отображения нет!</h3>
+        <goods-list :goods="filteredGoods" />
     </main>
 </div>
 
