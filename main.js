@@ -32,7 +32,7 @@ Vue.component('cart', {
     computed: {
         /*
         * метод добавляет в корзину выбранные товары и считает их там
-        * */
+        * */ 
         addToCart(good){
             console.log(good);
             if (this.cartGoods.indexOf(good) == -1) {
