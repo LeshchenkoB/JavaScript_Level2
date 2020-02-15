@@ -1,31 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="utf-8">
     <title>eShop</title>
-    <link rel="stylesheet" href="normalize.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="app">
-    <header>
-        <goods-search @input="filteredGoodsHandler" v-model="searchLine"></goods-search>
-        <div class="cart">
-            <button class="cart-button" @click="visibleCart">Корзина</button>
-            <div class="cart-container" :class="{ visibleCart: !isVisibleCart }">
-                    <cart></cart>
-            </div>
-        </div>
-    </header>
-    <main>
-        <goods-list :goods="filteredGoods" />
-    </main>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="main.js"></script>
-</body>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="/dist/build.js"></script>
+  </body>
 </html>
